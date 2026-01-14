@@ -1,0 +1,66 @@
+{
+  "timestamp": 1768326931261,
+  "processId": 12724,
+  "devices": {
+    "BYDAutoSpeedDevice": {
+      "getCurrentSpeed": 0
+    },
+    "BYDAutoStatisticDevice": {
+      "getTotalMileageValue": 39410,
+      "getSOCBatteryPercentage": 44,
+      "getElecDrivingRangeValue": 184
+    },
+    "BYDAutoGearboxDevice": {
+      "getGearboxAutoModeType": 1
+    },
+    "BYDAutoInstrumentDevice": {
+      "getOutCarTemperature": 25,
+      "getInCarTemperature": 22,
+      "getUnit(int)": {
+        "1": 1,
+        "2": 3,
+        "4": 1
+      },
+      "getWheelPressure(int)": {
+        "1": 394,
+        "2": 391,
+        "3": 394,
+        "4": 394
+      },
+      "getWheelTemperature(int)": {
+        "1": 29,
+        "2": 27,
+        "3": 29,
+        "4": 27
+      }
+    },
+    "BYDAutoAcDevice": {
+      "getAcStartState": 1,
+      "getAcWindLevel": 2,
+      "getAcWindMode": 2,
+      "getAcCycleMode": 1,
+      "getTemprature(int)": {
+        "1": 24,
+        "4": 24
+      },
+      "getAcDefrostState(int)": {
+        "2": 0
+      }
+    },
+    "BYDAutoChargingDevice": {
+      "getChargingState": 0,
+      "getChargingGunState": 1,
+      "getChargingPower": 0
+    },
+    "BYDAutoPM2p5Device": {
+      "getPM2p5Value": [9, 51]
+    }
+  },
+  "location": {
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "heading": 90.5,
+    "accuracy": 5.2
+  }
+}
+
