@@ -21,7 +21,7 @@ def upgrade():
     op.execute("CREATE EXTENSION IF NOT EXISTS cube")
     op.execute("CREATE EXTENSION IF NOT EXISTS earthdistance")
     
-    # Check if tables already exist (in case TeslaMate tables are present)
+        # Check if tables already exist (in case existing tables are present)
     # We'll create our tables only if they don't exist
     conn = op.get_bind()
     
@@ -48,7 +48,7 @@ def upgrade():
         op.create_index(op.f('ix_vehicles_id'), 'vehicles', ['id'], unique=False)
         op.create_index(op.f('ix_vehicles_vin'), 'vehicles', ['vin'], unique=True)
     
-    # Check if our positions table exists (different from TeslaMate's)
+            # Check if our positions table exists
     result = conn.execute(sa.text("""
         SELECT EXISTS (
             SELECT FROM information_schema.columns 
@@ -357,7 +357,7 @@ def upgrade():
 
 
 def downgrade():
-    # Drop our custom tables (but keep TeslaMate tables if they exist)
+        # Drop our custom tables (but keep existing tables if they exist)
     op.drop_index(op.f('ix_charging_data_points_timestamp'), table_name='charging_data_points')
     op.drop_index(op.f('ix_charging_data_points_id'), table_name='charging_data_points')
     op.drop_index(op.f('ix_charging_data_points_charging_session_id'), table_name='charging_data_points')
@@ -369,4 +369,4 @@ def downgrade():
     op.drop_index(op.f('ix_vehicles_vin'), table_name='vehicles')
     op.drop_index(op.f('ix_vehicles_id'), table_name='vehicles')
     op.drop_table('vehicles')
-    # Note: We don't drop positions/drives as they may be TeslaMate tables
+        # Note: We don't drop positions/drives as they may be existing tables

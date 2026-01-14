@@ -17,7 +17,8 @@ from telemetry.schemas import (
     VehicleListResponse,
 )
 from telemetry.transformer import transform_telemetry_data
-from telemetry.interpreter import map_gear_position
+from telemetry.devices.gearbox import map_gear_position
+from telemetry.devices.common import is_error_value
 from utils.validators import (
     validate_timestamp,
     validate_gps_coordinates,
