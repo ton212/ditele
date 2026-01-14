@@ -1,7 +1,7 @@
 """Pydantic schemas for telemetry API."""
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class LocationData(BaseModel):
@@ -13,14 +13,90 @@ class LocationData(BaseModel):
 
 
 class TelemetryRequest(BaseModel):
-    """Request schema for telemetry data."""
+    """Request schema for telemetry data.
+    
+    Supported BYD devices:
+    - BYDAutoSpeedDevice: Vehicle speed data
+    - BYDAutoStatisticDevice: Battery, odometer, and range data
+    - BYDAutoGearboxDevice: Gear position data
+    - BYDAutoInstrumentDevice: Temperature, tire pressure/temperature, and unit settings
+    - BYDAutoAcDevice: Air conditioning settings and state
+    - BYDAutoChargingDevice: Charging state and power
+    - BYDAutoPM2p5Device: Air quality sensors (PM2.5)
+    """
     timestamp: int = Field(..., description="Unix timestamp in milliseconds")
     processId: Optional[int] = Field(None, description="Process ID")
-    devices: Dict[str, Any] = Field(..., description="Device data from BYD SDK")
+    devices: Dict[str, Any] = Field(
+        ...,
+        description="Device data from BYD SDK. Supported devices: "
+        "BYDAutoSpeedDevice, BYDAutoStatisticDevice, BYDAutoGearboxDevice, "
+        "BYDAutoInstrumentDevice, BYDAutoAcDevice, BYDAutoChargingDevice, BYDAutoPM2p5Device",
+        json_schema_extra={
+            "example": {
+                "BYDAutoSpeedDevice": {
+                    "getCurrentSpeed": 0
+                },
+                "BYDAutoStatisticDevice": {
+                    "getTotalMileageValue": 39410,
+                    "getSOCBatteryPercentage": 44,
+                    "getElecDrivingRangeValue": 184
+                },
+                "BYDAutoGearboxDevice": {
+                    "getGearboxAutoModeType": 1
+                },
+                "BYDAutoInstrumentDevice": {
+                    "getOutCarTemperature": 25,
+                    "getInCarTemperature": 22,
+                    "getUnit(int)": {
+                        "1": 1,  # Temperature unit: 1=Celsius, 2=Fahrenheit
+                        "2": 3,  # Pressure unit: 1=bar, 2=psi, 3=kPa
+                        "4": 1   # Power unit: 1=kW, 2=HP
+                    },
+                    "getWheelPressure(int)": {
+                        "1": 394,  # Front Left (value/10 = actual pressure)
+                        "2": 391,  # Front Right
+                        "3": 394,  # Rear Left
+                        "4": 394   # Rear Right
+                    },
+                    "getWheelTemperature(int)": {
+                        "1": 29,  # Front Left (°C)
+                        "2": 27,  # Front Right
+                        "3": 29,  # Rear Left
+                        "4": 27   # Rear Right
+                    }
+                },
+                "BYDAutoAcDevice": {
+                    "getAcStartState": 1,
+                    "getAcWindLevel": 2,
+                    "getAcWindMode": 2,
+                    "getAcCycleMode": 1,
+                    "getTemprature(int)": {
+                        "1": 25,  # Driver temperature
+                        "4": 28   # Passenger temperature
+                    },
+                    "getAcDefrostState(int)": {
+                        "2": 0  # Rear defroster
+                    }
+                },
+                "BYDAutoChargingDevice": {
+                    "getChargingState": 0,
+                    "getChargingGunState": 1,
+                    "getChargingPower": 0
+                },
+                "BYDAutoPM2p5Device": {
+                    "getPM2p5Value": [9, 51]  # [inside, outside]
+                }
+            }
+        }
+    )
     location: Optional[LocationData] = Field(None, description="GPS location data (optional)")
     
-    # Timestamp validation is done in the router to return proper HTTP status codes
-    # (400 instead of 422 for validation errors)
+    model_config = ConfigDict(
+        json_schema_extra={
+            "description": "Telemetry data from BYD vehicle. All device data is optional, "
+            "but at least one device should be provided for meaningful data collection."
+        }
+    )
 
 
 class TelemetryResponse(BaseModel):
@@ -52,12 +128,10 @@ class VehicleResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VehicleListResponse(BaseModel):
     """Response schema for vehicle list."""
     vehicles: List[VehicleResponse]
     count: int
-
