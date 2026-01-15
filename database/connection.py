@@ -6,7 +6,7 @@ from config import settings
 
 # Create async engine
 engine = create_async_engine(
-    settings.database_url,
+    settings.get_database_url,
     echo=False,  # Set to True for SQL query logging
 )
 
